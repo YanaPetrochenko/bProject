@@ -31,8 +31,8 @@ mainviewwidget::~mainviewwidget()
 }
 void mainviewwidget::addresult()
 {
-    ResultWidget*result=new ResultWidget;
-    int res = result->exec();
+    ResultWidget*result=new ResultWidget(model);
+    result->exec();
     delete result;
 
 }

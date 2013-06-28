@@ -14,6 +14,8 @@ public:
 signals:
     
 public slots:
+private slots:
+    void apply();
 private:
     Model *const model;
     QLineEdit *display1;
@@ -21,7 +23,7 @@ private:
     QDateEdit *data;
     QHBoxLayout *timing;
     QPushButton *then;
-    QPushButton*arrowright;
+   // QPushButton*arrowright;
     QVBoxLayout *mainLayout;
     QHBoxLayout *buttonLayout;
     QSignalMapper *mapper;

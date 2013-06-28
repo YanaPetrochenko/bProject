@@ -8,8 +8,8 @@ FirstPage::FirstPage(Model *model, QWidget *parent) :
    time(new QTimeEdit()),
    data(new QDateEdit()),
    timing(new QHBoxLayout()),
-   then(new QPushButton("Continue")),
-   arrowright(new QPushButton("->")),
+   then(new QPushButton("Apply")),
+   //arrowright(new QPushButton("->")),
    mainLayout(new QVBoxLayout),
    buttonLayout(new QHBoxLayout),
    mapper(new QSignalMapper),
@@ -35,7 +35,15 @@ FirstPage::FirstPage(Model *model, QWidget *parent) :
     buttonLayout->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Expanding));
 
     buttonLayout->addWidget(then);
-    buttonLayout->addWidget(arrowright);
+   // buttonLayout->addWidget(arrowright);
+
+    QObject::connect(then,SIGNAL(clicked()),this,SLOT(apply()));
 
 
+}
+
+void FirstPage::apply()
+{
+    model->name()=display1->text();
+    model->startDateTime()=QDateTime(data->date(),time->time());
 }

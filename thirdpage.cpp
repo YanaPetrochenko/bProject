@@ -34,14 +34,31 @@ void ThirdPage::addTask()
     int result = enter->exec();
     if(result)
     {
-       // list3->addItem("zuzu");
+        task= new Task(enter->name(),enter->duration(),enter->getDevelopers(),enter->getDependences());
+        model->tasks()->push_back(task);
+        list3->addItem(task->toString());
     }
     delete enter;
 }
 
 void ThirdPage::editTask()
 {
+    if(list3->selectedItems().size()==1)
+    {
+        Task *task = model->tasks()->at(list3->currentRow());
+        TaskEnter *dialog = new TaskEnter(task,model);
+        int result = dialog->exec();
+        if(result)
+        {
+           task->setName(dialog->name());
+           task->setDuration(dialog->duration());
+           task->developers()=dialog->getDevelopers();
+           task->dependences()=dialog->getDependences();
 
+           list3->currentItem()->setText(task->toString());
+        }
+        delete dialog;
+    }
 }
 void ThirdPage::deleteTask()
 {

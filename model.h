@@ -19,7 +19,8 @@ public:
     QDateTime &endDateTime();
     void calculate();
     void output();
-    void criticalpath(Task *vertex);
+    Task* criticalpath(Task *vertex);
+    Task* root();
 private:
     QString nameofproject;
     QDateTime startDateTime_;

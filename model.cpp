@@ -4,7 +4,8 @@
 
 Model::Model():
     developers_(new QVector<Developer*>),
-    tasks_(new QVector<Task*>)
+    tasks_(new QVector<Task*>),
+    parent(0)
 
 {
 }
@@ -53,6 +54,10 @@ void Model:: calculate()
 {
     endDateTime_=startDateTime_;
     QDateTime retTime=startDateTime_;
+    for(int i=0;i<tasks_->size();++i)
+    {
+        tasks_->at(i)->reset();
+    }
     for(int i=0;i<tasks_->size();++i)
     {
         dfs(tasks_->at(i),retTime);
@@ -109,13 +114,15 @@ void Model::output()
    // qDebug()<<"\n\n\ criticalpath:";
     criticalpath(parent);
 }
- void Model::criticalpath(Task *vertex)
+Task *Model::criticalpath(Task *vertex)
  {
-     if(vertex)
-     {
-         criticalpath(vertex->parent);
-         qDebug()<<vertex->nameOfTask;
-        // qDebug()<<vertex->startTime<<" -> "<<vertex->endTime;
 
-     }
+
+       return vertex->parent;
+
  }
+
+Task* Model::root()
+{
+    return parent;
+}

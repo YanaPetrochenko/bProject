@@ -3,19 +3,21 @@
 
 #include <QWidget>
 #include <QtGui>
+#include "model.h"
 
 
 class ResultWidget : public QDialog
 {
     Q_OBJECT
 public:
-    explicit ResultWidget(QWidget *parent = 0);
+    explicit ResultWidget(Model *model,QWidget *parent = 0);
     
 signals:
     
 public slots:
 
 private:
+    Model *const model;
     QVBoxLayout*mainlayout;
     QLabel*nameofproject;
     QGroupBox*time;

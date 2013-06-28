@@ -1,4 +1,7 @@
 #include "taskenter.h"
+#include "selectdeveloper.h"
+#include "selectdependence.h"
+#include "QDebug"
 
 
 TaskEnter::TaskEnter(Task *task, Model *model, QWidget *parent) :
@@ -57,6 +60,7 @@ TaskEnter::TaskEnter(Task *task, Model *model, QWidget *parent) :
             if(!futureDeveloper->contains(model->developers()->at(i)))
                 availableDeveloper->push_back(model->developers()->at(i));
 
+
         futureDependences = task->dependences();
         for( int i=0; i<model->tasks()->size();++i)
             if(!futureDependences->contains(model->tasks()->at(i))&&model->tasks()->at(i)!=task)
@@ -74,6 +78,15 @@ TaskEnter::TaskEnter(Task *task, Model *model, QWidget *parent) :
             if(model->tasks()->at(i)!=task)
                 availableTasks->push_back(model->tasks()->at(i));
     }
+    for(int i=0;i<futureDeveloper->size();++i)
+    {
+        developers->addItem(futureDeveloper->at(i)->name());
+    }
+    for(int i=0;i<futureDependences->size();++i)
+    {
+        dependences->addItem(futureDependences->at(i)->name());
+    }
+
     spinhours->setRange(0,24);
     setLayout(mainLayout);
     mainLayout->addWidget(nametask);
@@ -116,9 +129,9 @@ TaskEnter::TaskEnter(Task *task, Model *model, QWidget *parent) :
 
     QObject::connect(ok,SIGNAL(clicked()),this,SLOT(accept()));
     QObject::connect(cancel,SIGNAL(clicked()),this,SLOT(reject()));
-    QObject::connect(adddeveloper,SIGNAL(clicked()),this,SLOT(addDeveloperSlot());
-    QObject::connect(editdeveloper,SIGNAL(clicked()),this,SLOT(editDeveloperSlot());
-    QObject::connect(deletedeveloper,SIGNAL(clicked()),this,SLOT(deleteDeveloperSlot());
+    QObject::connect(adddeveloper,SIGNAL(clicked()),this,SLOT(addDeveloperSlot()));
+    QObject::connect(editdeveloper,SIGNAL(clicked()),this,SLOT(editDeveloperSlot()));
+    QObject::connect(deletedeveloper,SIGNAL(clicked()),this,SLOT(deleteDeveloperSlot()));
     QObject::connect(adddependence,SIGNAL(clicked()),this,SLOT(addDependenceSlot()));
     QObject::connect(editdependence,SIGNAL(clicked()),this,SLOT(editDependenceSlot()));
     QObject::connect(deletedependence,SIGNAL(clicked()),this,SLOT(deleteDependenceSlot()));
@@ -126,13 +139,7 @@ TaskEnter::TaskEnter(Task *task, Model *model, QWidget *parent) :
 
 TaskEnter::~TaskEnter()
 {
-    /*for(int i=0; i<developers.size(); ++i)
-        delete developers.at(i);
-    for(int i=0; i<dependences.size(); ++i)
-        delete dependences.at(i);
-    developers.clear();
-    dependences.clear();
-    */
+
 }
 
 
@@ -158,31 +165,106 @@ TaskEnter::~TaskEnter()
 
  void TaskEnter::addDeveloperSlot()
  {
+     Developer *developer=0;
+     SelectDeveloper *dialog = new SelectDeveloper(developer,availableDeveloper);
+     int result = dialog->exec();
+     if(result)
+     {
+        developer=dialog->selected();
+        if(developer)
+        {
 
+            futureDeveloper->push_back(developer);
+            developers->addItem(developer->name());
+        }
+     }
+     delete dialog;
  }
 
  void TaskEnter::editDeveloperSlot()
  {
-
+     if(developers->selectedItems().size()==1)
+    {
+        Developer *developer = futureDeveloper->at(developers->currentRow());
+        SelectDeveloper *dialog = new SelectDeveloper(developer,availableDeveloper);
+        int result = dialog->exec();
+        if(result)
+        {
+           developer=dialog->selected();
+           futureDeveloper->replace(developers->currentRow(),developer);
+           developers->currentItem()->setText(developer->name());
+        }
+        delete dialog;
+    }
  }
+
 
  void TaskEnter::deleteDeveloperSlot()
  {
+     if(developers->selectedItems().size()==1)
+     {
+         int index = developers->currentRow();
+         Developer *developer = futureDeveloper->at(index);
+         QListWidgetItem *item = developers->item(index);
+         developers->removeItemWidget(item);
+         delete item;
 
+         futureDeveloper->remove(index);
+         availableDeveloper->push_back(developer);
+     }
  }
 
  void TaskEnter::addDependenceSlot()
  {
+     Task *parent=0;
+     SelectDependence *dialog = new SelectDependence(parent,availableTasks);
+     int result = dialog->exec();
+     if(result)
+     {
+        parent=dialog->selected();
+        if(parent)
+        {
 
+            futureDependences->push_back(parent);
+            dependences->addItem(parent->toString());
+        }
+     }
+     delete dialog;
  }
 
  void TaskEnter::editDependenceSlot()
  {
-
+     if(dependences->selectedItems().size()==1)
+     {
+         Task *parent=futureDependences->at(dependences->currentRow());
+         SelectDependence *dialog = new SelectDependence(parent,availableTasks);
+         int result = dialog->exec();
+         if(result)
+         {
+            parent=dialog->selected();
+            if(parent)
+            {
+                parent=dialog->selected();
+                futureDependences->replace(dependences->currentRow(),parent);
+                dependences->currentItem()->setText(parent->toString());
+            }
+         }
+         delete dialog;
+     }
  }
 
  void TaskEnter::deleteDependenceSlot()
  {
+     if(dependences->selectedItems().size()==1)
+     {
+         int index = dependences->currentRow();
+         Task *parent = futureDependences->at(index);
+         QListWidgetItem *item = dependences->item(index);
+         dependences->removeItemWidget(item);
+         delete item;
 
+         futureDependences->remove(index);
+         availableTasks->push_back(parent);
+     }
  }
 

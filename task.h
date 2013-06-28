@@ -17,8 +17,10 @@ public:
     void setName(const QString &name);
     int duration() const;
     void setDuration(int duration) ;
-    QVector<Developer *> *developers();
-    QVector<Task *> *dependences();
+    QVector<Developer *> *&developers();
+    QVector<Task *> *&dependences();
+    QString toString();
+    void reset();
 private:
 
     QString nameOfTask;
