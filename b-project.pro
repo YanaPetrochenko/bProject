@@ -35,6 +35,3 @@ HEADERS  += \
     enterdeveloper.h \
     model.h \
     resultwidget.h
-
-RESOURCES += \
-    background.qrc

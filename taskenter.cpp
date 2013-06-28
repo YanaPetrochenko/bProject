@@ -64,7 +64,7 @@ TaskEnter::TaskEnter(Task *task, Model *model, QWidget *parent) :
     }
     spinhours->setRange(0,24);
     setLayout(mainLayout);
-    mainLayout->addWidget(nametask);
+  /*  mainLayout->addWidget(nametask);
     mainLayout->addWidget(display);
     mainLayout->addWidget(taskduration);
     taskduration->setLayout(groupsduration);
@@ -73,7 +73,7 @@ TaskEnter::TaskEnter(Task *task, Model *model, QWidget *parent) :
     namedays->setLayout(days);
     days->addWidget(spinday);
     namehours->setLayout(hours);
-    hours->addWidget(spinhours);
+    hours->addWidget(spinhours);*/
 
     mainLayout->addLayout(groups);
     mainLayout->addSpacerItem(new QSpacerItem(0,30,QSizePolicy::Minimum,QSizePolicy::Expanding));
