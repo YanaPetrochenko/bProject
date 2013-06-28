@@ -22,7 +22,9 @@ SOURCES += main.cpp \
     developer.cpp \
     enterdeveloper.cpp \
     model.cpp \
-    resultwidget.cpp
+    resultwidget.cpp \
+    selectdeveloper.cpp \
+    selectdependence.cpp
 
 HEADERS  += \
     mainviewwidget.h \
@@ -34,4 +36,6 @@ HEADERS  += \
     developer.h \
     enterdeveloper.h \
     model.h \
-    resultwidget.h
+    resultwidget.h \
+    selectdeveloper.h \
+    selectdependence.h

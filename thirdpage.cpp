@@ -34,7 +34,7 @@ void ThirdPage::addTask()
     int result = enter->exec();
     if(result)
     {
-        list3->addItem("zuzu");
+       // list3->addItem("zuzu");
     }
     delete enter;
 }

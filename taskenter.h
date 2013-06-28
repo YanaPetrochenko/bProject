@@ -20,16 +20,24 @@ signals:
     
 public slots:
 private slots:
-    void changeDeveloperCount(int newCountDeveloper);
-    void changeDependenceCount(int newCountDependence);
+    void addDeveloperSlot();
+    void editDeveloperSlot();
+    void deleteDeveloperSlot();
+    void addDependenceSlot();
+    void editDependenceSlot();
+    void deleteDependenceSlot();
 private:
     Task *task;
     Model *const model;
+    QVector<Developer *> *futureDeveloper;
+    QVector<Developer *> *availableDeveloper;
+    QVector<Task *> *futureDependences;
+    QVector<Task *> *availableTasks;
     int numberDevelopers, numberDependences;
     QLineEdit *display;
     QLabel *nametask, *durationLabel;
-    QSpinBox *countdevelopers;
-    QSpinBox *countdependence;
+   // QSpinBox *countdevelopers;
+   // QSpinBox *countdependence;
     QVBoxLayout *mainLayout;
     QGroupBox *developersGroup;
     QGroupBox *dependencesGroup;
@@ -44,9 +52,19 @@ private:
     QGroupBox *namehours;
     QSpinBox *spinday;
     QSpinBox *spinhours;
+    QListWidget*dependences;
+    QListWidget*developers;
+    QPushButton*adddeveloper;
+    QPushButton*editdeveloper;
+    QPushButton*deletedeveloper;
+    QPushButton*adddependence;
+    QPushButton*editdependence;
+    QPushButton*deletedependence;
+    QHBoxLayout*developersbuttonlayout;
+    QHBoxLayout*dependencesbuttonlayout;
     //QSpinBox *spinbox1;
     //QSpinBox *spinbox2;
-    QVector<QComboBox *> developers, dependences;
+    //QVector<QComboBox *> developers, dependences;
     QPushButton *ok;
     QPushButton *cancel;
     

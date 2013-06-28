@@ -5,6 +5,8 @@ TaskEnter::TaskEnter(Task *task, Model *model, QWidget *parent) :
     QDialog(parent),
     task(task),
     model(model),
+    availableDeveloper(new QVector<Developer *>),
+    availableTasks(new QVector<Task *>),
     numberDevelopers(3),
     numberDependences(6),
     display(new QLineEdit()),
@@ -20,51 +22,61 @@ TaskEnter::TaskEnter(Task *task, Model *model, QWidget *parent) :
     //spinbox1(new QSpinBox()),
     //spinbox2(new QSpinBox()),
     nametask(new QLabel("Name of task")),
-    countdevelopers(new QSpinBox),
-    countdependence(new QSpinBox),
+   // countdevelopers(new QSpinBox),
+   // countdependence(new QSpinBox),
     developersGroup(new QGroupBox("Developers")),
     dependencesGroup(new QGroupBox("Dependences")),
     groups(new QHBoxLayout),
     developerlayout(new QVBoxLayout),
     taskslayout(new QVBoxLayout),
     buttonsLayout(new QHBoxLayout),
+    dependences(new QListWidget),
+    developers(new QListWidget),
+    adddeveloper(new QPushButton("add")),
+    editdeveloper(new QPushButton("edit")),
+    deletedeveloper(new QPushButton("delete")),
+    adddependence(new QPushButton("add")),
+    editdependence(new QPushButton("edit")),
+    deletedependence(new QPushButton("delete")),
+    developersbuttonlayout(new QHBoxLayout),
+    dependencesbuttonlayout(new QHBoxLayout),
     ok(new QPushButton("Ok")),
     cancel(new QPushButton("Cancel"))
 {
-    countdevelopers->setRange(1,5);
-    countdependence->setRange(0,10);
+    //countdevelopers->setRange(1,5);
+    //countdependence->setRange(0,10);
 
     if(task)
     {
+        setModal(true);
         display->setText(task->name());
         spinday->setValue(task->duration()/24);
         spinhours->setValue(task->duration()%24);
-        numberDevelopers=task->developers()->size();
-        countdevelopers->setValue(numberDevelopers);
-        for(int i=0; i<countdevelopers->value(); ++i)
-            developers.push_back(new QComboBox);
-        numberDependences = task->dependences()->size();
-        countdependence->setValue(numberDependences);
-        for(int i=0;i<countdependence->value();++i)
-            dependences.push_back(new QComboBox);
+        futureDeveloper = task->developers();
+        for( int i=0; i<model->developers()->size();++i)
+            if(!futureDeveloper->contains(model->developers()->at(i)))
+                availableDeveloper->push_back(model->developers()->at(i));
+
+        futureDependences = task->dependences();
+        for( int i=0; i<model->tasks()->size();++i)
+            if(!futureDependences->contains(model->tasks()->at(i))&&model->tasks()->at(i)!=task)
+                availableTasks->push_back(model->tasks()->at(i));
     }
     else
     {
 
+        futureDeveloper =new QVector<Developer *>;
+        for( int i=0; i<model->developers()->size();++i)
+            availableDeveloper->push_back(model->developers()->at(i));
 
-    countdevelopers->setValue(numberDevelopers);
-    for(int i=0; i<countdevelopers->value(); ++i)
-        developers.push_back(new QComboBox);
-
-
-    countdependence->setValue(numberDependences);
-    for(int i=0;i<countdependence->value();++i)
-        dependences.push_back(new QComboBox);
-
+        futureDependences = new QVector<Task *>;
+        for( int i=0; i<model->tasks()->size();++i)
+            if(model->tasks()->at(i)!=task)
+                availableTasks->push_back(model->tasks()->at(i));
     }
     spinhours->setRange(0,24);
     setLayout(mainLayout);
-  /*  mainLayout->addWidget(nametask);
+    mainLayout->addWidget(nametask);
     mainLayout->addWidget(display);
     mainLayout->addWidget(taskduration);
     taskduration->setLayout(groupsduration);
@@ -73,7 +85,7 @@ TaskEnter::TaskEnter(Task *task, Model *model, QWidget *parent) :
     namedays->setLayout(days);
     days->addWidget(spinday);
     namehours->setLayout(hours);
-    hours->addWidget(spinhours);*/
+    hours->addWidget(spinhours);
 
     mainLayout->addLayout(groups);
     mainLayout->addSpacerItem(new QSpacerItem(0,30,QSizePolicy::Minimum,QSizePolicy::Expanding));
@@ -84,93 +96,45 @@ TaskEnter::TaskEnter(Task *task, Model *model, QWidget *parent) :
     groups->addWidget(dependencesGroup);
 
     developersGroup->setLayout(developerlayout);
-
-    developerlayout->addWidget(countdevelopers);
-    for(int i=0;i<developers.size();++i)
-        developerlayout->addWidget(developers.at(i));
-    developerlayout->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Minimum,QSizePolicy::Expanding));
+    developerlayout->addWidget(developers);
+    developerlayout->addLayout(developersbuttonlayout);
+    developersbuttonlayout->addWidget(adddeveloper);
+    developersbuttonlayout->addWidget(editdeveloper);
+     developersbuttonlayout->addWidget(deletedeveloper);
 
 
     dependencesGroup->setLayout(taskslayout);
-
-    taskslayout->addWidget(countdependence);
-    for(int i=0;i<dependences.size();++i)
-        taskslayout->addWidget(dependences.at(i));
-    taskslayout->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Minimum,QSizePolicy::Expanding));
-
+    taskslayout->addWidget(dependences);
+    taskslayout->addLayout(dependencesbuttonlayout);
+    dependencesbuttonlayout->addWidget(adddependence);
+    dependencesbuttonlayout->addWidget(editdependence);
+    dependencesbuttonlayout->addWidget(deletedependence);
 
     buttonsLayout->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Expanding));
     buttonsLayout->addWidget(ok);
     buttonsLayout->addWidget(cancel);
 
-    if(task)
-    {
-        for(int i=0; i<countdevelopers->value(); ++i)
-            developers.at(i)->insertItem(0,task->developers()->at(i)->name());
-        for(int i=0;i<dependences.size();++i)
-            dependences.at(i)->insertItem(0,task->dependences()->at(i)->name());
-    }
-
     QObject::connect(ok,SIGNAL(clicked()),this,SLOT(accept()));
     QObject::connect(cancel,SIGNAL(clicked()),this,SLOT(reject()));
-
-    QObject::connect(countdevelopers,SIGNAL(valueChanged(int)),this,SLOT(changeDeveloperCount(int)));
-    QObject::connect(countdependence,SIGNAL(valueChanged(int)),this,SLOT(changeDependenceCount(int)));
+    QObject::connect(adddeveloper,SIGNAL(clicked()),this,SLOT(addDeveloperSlot());
+    QObject::connect(editdeveloper,SIGNAL(clicked()),this,SLOT(editDeveloperSlot());
+    QObject::connect(deletedeveloper,SIGNAL(clicked()),this,SLOT(deleteDeveloperSlot());
+    QObject::connect(adddependence,SIGNAL(clicked()),this,SLOT(addDependenceSlot()));
+    QObject::connect(editdependence,SIGNAL(clicked()),this,SLOT(editDependenceSlot()));
+    QObject::connect(deletedependence,SIGNAL(clicked()),this,SLOT(deleteDependenceSlot()));
 }
 
 TaskEnter::~TaskEnter()
 {
-    for(int i=0; i<developers.size(); ++i)
+    /*for(int i=0; i<developers.size(); ++i)
         delete developers.at(i);
     for(int i=0; i<dependences.size(); ++i)
         delete dependences.at(i);
     developers.clear();
     dependences.clear();
+    */
 }
 
-void TaskEnter::changeDeveloperCount(int newCountDeveloper)
-{
-    if(newCountDeveloper>numberDevelopers)
-    {
-
-        for(int i=numberDevelopers; i<newCountDeveloper; ++i)
-        {
-            developers.push_back(new QComboBox);
-            developerlayout->insertWidget(developerlayout->count()-1,developers.at(i));
-        }
-
-    }
-    else if (newCountDeveloper<numberDevelopers)
-    {
-        for(int i=numberDevelopers-1; i>=newCountDeveloper; --i)
-        {
-            delete developers.at(i);
-            developers.pop_back();
-        }
-    }
-    numberDevelopers = newCountDeveloper;
-}
- void TaskEnter::changeDependenceCount(int newCountDependence)
- {
-     if(newCountDependence>numberDependences)
-     {
-         for(int i=numberDependences;i<newCountDependence;++i)
-         {
-             dependences.push_back(new QComboBox);
-             taskslayout->insertWidget(taskslayout->count()-1,dependences.at(i));
-         }
-
-     }
-     else if(newCountDependence<numberDependences)
-     {
-         for(int i=numberDependences-1;i>=newCountDependence;--i)
-         {
-             delete dependences.at(i);
-             dependences.pop_back();
-         }
-     }
-     numberDependences=newCountDependence;
- }
 
  QString TaskEnter::name() const
  {
@@ -184,22 +148,41 @@ void TaskEnter::changeDeveloperCount(int newCountDeveloper)
 
  QVector<Developer*> *TaskEnter::getDevelopers()
  {
-    return new QVector<Developer*>;
+    return futureDeveloper;
  }
 
  QVector<Task*> *TaskEnter::getDependences()
  {
-     return new QVector<Task*>;
+     return futureDependences;
  }
 
-/*
-void TaskEnter::confirm()
-{
-    QVector<Developer *> dvlp;
-    QVector<Task *> dpnd;
-    for(int i=0; i< developers.size(); ++i)
-        dvlp.push_back(new Developer(developers.at(i)->currentText()));
-   // task= new Task(display->text(),spinday->value()*24+spinhours->value(),dvlp,dpnd);
-    accept();
-}
-*/
+ void TaskEnter::addDeveloperSlot()
+ {
+
+ }
+
+ void TaskEnter::editDeveloperSlot()
+ {
+
+ }
+
+ void TaskEnter::deleteDeveloperSlot()
+ {
+
+ }
+
+ void TaskEnter::addDependenceSlot()
+ {
+
+ }
+
+ void TaskEnter::editDependenceSlot()
+ {
+
+ }
+
+ void TaskEnter::deleteDependenceSlot()
+ {
+
+ }
+
